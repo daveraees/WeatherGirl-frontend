@@ -1,0 +1,10 @@
+<html>
+<body>
+<h1>Select the country from the list first:</h1>
+
+{% for country in countries %}
+<a href='/{{ country }}'>{{ country }}</a> 
+{% endfor %}
+    
+</body>
+</html>

@@ -1,0 +1,17 @@
+<html>
+<body>
+<h1>We are in {{ name }} ({{ country }})!</h1>
+    <h2>Weather situation for {{ info_date }}</h2>
+    <p>
+    {% for (record_date, record_timestamp) in other_records %}
+    <a href='query?country={{ country }}&city={{ name }}&timestamp={{ record_timestamp }}'>{{ record_date }}</a> 
+    {% endfor %}
+    <p>
+    {{ weather_info|safe }}
+    <p>
+    <h2>Weather forecast</h2>
+    <p>
+    {{ forecast_info|safe }}
+    <p><a href='/'>Return to the homepage</a>
+</body>
+</html>

@@ -1,0 +1,14 @@
+
+{'Server': 'openresty',
+ 'Date': 'Sat, 14 Nov 2020 22:12:18 GMT',
+ 'Content-Type': 'application/json; charset=utf-8',
+ 'Content-Length': '17748',
+ 'Connection': 'close',
+ 'X-Cache-Key': '/data/2.5/onecall?lat=49.41&lon=14.66&units=metric',
+ 'Access-Control-Allow-Origin': '*',
+ 'Access-Control-Allow-Credentials': 'true',
+ 'Access-Control-Allow-Methods': 'GET, POST',
+ 'timestamp': '1605391938',
+ 'data_storage_link': 'weather-lat=49.41_lon=14.66_units=metric_TS=1605391938.json'}
+
+
