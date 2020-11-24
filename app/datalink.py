@@ -7,6 +7,12 @@ import urllib
 import gzip, json
 import datetime as dt    
 
+def extract_json_data(jsonfilename):
+    with gzip.GzipFile(jsonfilename, 'r') as fin:
+        #print('enc', json.detect_encoding(fin.read()))
+        data = [json.loads(line,encoding='utf-8') for line in fin.readlines()]
+        #data = json.loads(fin.read().decode('utf-8'),encoding='utf-8')
+    return data
 def get_dict_from_json_gzip_http(record_fname):
     """
     retrieves stored gzipped file from S3  
@@ -19,6 +25,30 @@ def get_dict_from_json_gzip_http(record_fname):
     except:
         data = None
     return data
+def save_appconfig(filename, config):
+    """
+    helper for saving the app config
+    inputs : 
+    file: filename for saving the configuration
+    config: configuration object
+    
+    returns:
+    None
+    """
+    
+    remote_link  = os.environ['WG_CONFIG_PATH']
+    print('saving config to file:', remote_link)
+    data_json = gzip.compress (json.dumps(config).encode('utf-8'))
+    req = urllib.request.Request(url=remote_link, data=data_json,method='PUT')
+    with urllib.request.urlopen(req) as f:
+        pass
+    return
+
+    #data_json = json.dumps(config)
+    #with gzip.GzipFile(jsonfilename, 'r') as fin
+    #with open(filename,'w') as cfile:
+    #    cfile.write(data_json)
+    return
 
 def load_appconfig(filename, config=None):
     """
@@ -29,7 +59,7 @@ def load_appconfig(filename, config=None):
     config: configuration object
     
     returns:
-    None ot the new config dictionary
+    None
     """
     new_config = get_dict_from_json_gzip_http(filename)
     
@@ -39,6 +69,40 @@ def load_appconfig(filename, config=None):
         config.update(new_config)
         response = None
     return response
+
+def init_config_file(local_data_folder, config_path, count_limit=3):
+    # setup the application configuration
+    config = dict()
+    
+    DATA_STORE = local_data_folder # this will point to the folder in the compute server in the cloud
+    cities_Fname = os.path.join(DATA_STORE, 'weather_14.json.gz') # where the list of cities for initialization is stored
+    country_retireve = 'CZ' # download data for cities in this country
+
+    config['DATA_STORE'] = DATA_STORE
+    config['WG_REMOTE_DATA_STORE'] = os.environ['WG_REMOTE_DATA_STORE'] # this will point to the AWS S3 
+
+    config['OPENWEATHER_ONECALL_URL'] = 'https://api.openweathermap.org/data/2.5/onecall?'
+    config['OPENWEATHER_QUERY'] = {'lat':None,
+                                      'lon':None,
+                                      'units':'metric'}
+    config['CITY_LIST'] = [item['city'] for item in extract_json_data(cities_Fname)] # list of cities, links to their records and retrieval status
+
+    # configure retrieval of weather information (staticaly, for all CZ cities from the list)
+    limit = count_limit # for testing purposes, download only 3 cities
+
+    for city in config['CITY_LIST']:
+        if (city['country'] == country_retireve) and (limit>=0):
+            city['retrieve'] = True
+            #city['retrieval_interval(s)'] = 3600
+            limit -=1
+            print(city['name'])
+        else:
+            city['retrieve'] = False
+
+    # save the config in a json file
+    save_appconfig(config_path,config)
+    return
+
 
 def get_updated_city_list(form_location):
     # reload config

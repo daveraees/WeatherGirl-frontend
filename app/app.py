@@ -14,7 +14,7 @@ import pandas as pd
 
 # Local imports
 #sys.path.insert(0, str(pathlib.Path(__file__).parent))
-from datalink import get_dict_from_data_http, get_updated_city_list, get_city_coord
+from datalink import get_dict_from_data_http, get_updated_city_list, get_city_coord, load_appconfig, init_config_file
 from db_access import fetch_records_table_for_coord, engine
 
 
@@ -120,6 +120,13 @@ def plot_param(city,country,plot_parameter='main.temp'):
     return response
 
 if __name__ == '__main__':
+    config = load_appconfig(os.environ['WG_CONFIG_PATH'])
+    if config == None:
+        # initialize the config file if none is found
+        local_data_folder=os.environ['WG_LOCAL_DATA_STORE']
+        config_path=os.environ['WG_CONFIG_PATH']
+        init_config_file(local_data_folder, config_path, count_limit=os.environ['WG_CITY_COUNT_LIMIT'])
+        config = load_appconfig(os.environ['WG_CONFIG_PATH'])
     app.run(debug=True, host='0.0.0.0')
     
     
