@@ -19,8 +19,8 @@ from db_access import fetch_records_table_for_coord, engine
 
 
 app = Flask(__name__)
-city_list = get_updated_city_list(form_location=os.environ['WG_CONFIG_PATH']) # update using the list of records stored on local disk
-app.config['CITY_LIST'] = city_list
+#city_list = get_updated_city_list(form_location=os.environ['WG_CONFIG_PATH']) # update using the list of records stored on local disk
+#app.config['CITY_LIST'] = city_list
 
 
 @app.route('/')
@@ -125,7 +125,7 @@ if __name__ == '__main__':
         # initialize the config file if none is found
         local_data_folder=os.environ['WG_LOCAL_DATA_STORE']
         config_path=os.environ['WG_CONFIG_PATH']
-        init_config_file(local_data_folder, config_path, count_limit=os.environ['WG_CITY_COUNT_LIMIT'])
+        init_config_file(local_data_folder, config_path, count_limit=int(os.environ['WG_CITY_COUNT_LIMIT']))
         config = load_appconfig(os.environ['WG_CONFIG_PATH'])
     app.run(debug=True, host='0.0.0.0')
     
