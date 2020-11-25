@@ -7,7 +7,7 @@ The app looks-up the database to get list of filenames that contain weather info
 ## Prerequisites:
 The app serves as a web UI to display data stored in the cloud infrastructure. The app must have access to the respective services, namely the S3 bucket and the mysql database server.
  
-Another app [WeatherGirl-backend](https://github.com/daveraees/WeatherGirl-frontend)  can be used to retrieve the weather info files from OpenWeatherMap and store the data files in the S3 bucket.
+Another app [WeatherGirl-backend](https://github.com/daveraees/WeatherGirl-backend)  can be used to retrieve the weather info files from OpenWeatherMap and store the data files in the S3 bucket.
  
  
 ## Dependency requirements for running the server:
@@ -35,5 +35,5 @@ running the web server locally from the source code in the root directory of the
 
         $ python3 ./app/app.py
 
-The files docker-compose.yml and Dockerfile contain instructions needed to build a docker image for the deployment in the 
+The files docker-compose.yml and Dockerfile contain instructions needed to build a docker image.
 
