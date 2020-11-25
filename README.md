@@ -23,8 +23,8 @@ Before running the app itself from source code, or building of container, please
 - WG_CONFIG_PATH=path/to/config/wg_config.json.gz # this file must be accessible also to the backend app, that uses it to execute the weather infro downloads
 - WG_LOCAL_DATA_STORE=app/data # where small temporary file can be stored. No requirements for accessibility from other services
 - WG_DATABASE_ENDPOINT=mysqlDB.example.com
-- WG_DATABASE_USER=<mysql_read_access_username>
-- WG_DATABASE_PASS=<mysql_password>
+- WG_DATABASE_USER="mysql_read_access_username"
+- WG_DATABASE_PASS="mysql_password"
 - WG_DATABASE_PORT: 3306
 - WG_DATABASE_NAME: 'cities'
 - WG_CITY_COUNT_LIMIT=60 # maximum number of cities that can be marked for download by the backend app.
@@ -34,6 +34,8 @@ Before running the app itself from source code, or building of container, please
 running the web server locally from the source code in the root directory of the local git repository:
 
         $ python3 ./app/app.py
+        
+This will start the web server. The app will try to download the configuration file. If the config download fail, it will create new config, using the city locaiton database in file app/data/weather_14.json.gz
 
 The files docker-compose.yml and Dockerfile contain instructions needed to build a docker image.
 

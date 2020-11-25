@@ -28,7 +28,7 @@ app = Flask(__name__)
 def index():
     citiesLST = []
     display_country = 'CZ'
-    for item in app.config['CITY_LIST']:
+    for item in config['CITY_LIST']:
         if item['country'] == display_country:
             if item['retrieve']==True:
                 citiesLST.append(item['name'])
@@ -38,7 +38,7 @@ def index():
 @app.route('/<country>')
 def show_cities(country):
     citiesLST = []
-    for item in app.config['CITY_LIST']:
+    for item in config['CITY_LIST']:
         if item['country'] == country:
             citiesLST.append(item['name'])
     return render_template('list_of_cities.html', cities = citiesLST, country=country)
@@ -46,7 +46,7 @@ def show_cities(country):
 @app.route('/list_of_countries')
 def show_countries():
     countryLST = []
-    for item in app.config['CITY_LIST']:
+    for item in config['CITY_LIST']:
         country=item['country']
         if not country in countryLST:
             countryLST.append(country)
@@ -62,7 +62,7 @@ def show_city():
     timestamp = request.args.get('timestamp')
     country=request.args.get('country')
     city=request.args.get('city')
-    coord = get_city_coord(city,country,app.config['CITY_LIST'])
+    coord = get_city_coord(city,country,config['CITY_LIST'])
     
     records_pd = fetch_records_table_for_coord(engine,coord) # list of records downloaded for this city
     if type(records_pd)!=type(None):
