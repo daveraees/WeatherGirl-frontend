@@ -3,8 +3,9 @@
 <h1>List of cities from country {{ country }}</h1>
 
     <p> Select a city for which the weather information you would like to see:
+    <p>
 {% for city in cities %}
-<a href='/query?country={{ country }}&city={{ city }}'>{{ city }}</a> 
+<a href='/query?country={{ country }}&city={{ city }}'>{{ city }}, </a> 
 {% endfor %}
     
 </body>
