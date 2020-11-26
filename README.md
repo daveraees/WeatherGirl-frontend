@@ -19,7 +19,7 @@ Another app [WeatherGirl-backend](https://github.com/daveraees/WeatherGirl-backe
 ### environment variables:
 Before running the app itself from source code, or building of container, please make sure the following environmental variables are configured
 
-- WG_REMOTE_DATA_STORE=https://appbucket.s3.amazonaws.com  # URL of the file storage server (an S3 bucket)
+- WG_S3BUCKET_NAME=appbucket # name of the file storage  server S3 buckeet
 - WG_CONFIG_PATH=path/to/config/wg_config.json.gz # this file must be accessible also to the backend app, that uses it to execute the weather infro downloads
 - WG_LOCAL_DATA_STORE=app/data # where small temporary file can be stored. No requirements for accessibility from other services
 - WG_DATABASE_ENDPOINT=mysqlDB.example.com

@@ -5,7 +5,7 @@ import sys
 import pathlib
 import datetime as dt
 import urllib.request
-
+import boto3
 # for the data processing
 import pandas as pd
 
@@ -14,11 +14,13 @@ import pandas as pd
 
 # Local imports
 #sys.path.insert(0, str(pathlib.Path(__file__).parent))
-from datalink import get_dict_from_data_http, get_updated_city_list, get_city_coord, load_appconfig, init_config_file
+from datalink import download_jsongz_data, get_updated_city_list, get_city_coord, load_appconfig, init_config_file
 from db_access import fetch_records_table_for_coord, engine
 
 
 app = Flask(__name__)
+# Let's use Amazon S3
+s3engine = boto3.client('s3')
 #city_list = get_updated_city_list(form_location=os.environ['WG_CONFIG_PATH']) # update using the list of records stored on local disk
 #app.config['CITY_LIST'] = city_list
 
@@ -67,8 +69,8 @@ def show_city():
     records_pd = fetch_records_table_for_coord(engine,coord) # list of records downloaded for this city
     if type(records_pd)!=type(None):
         record_filenames = list(records_pd['data_storage_link'].values )
-        DS_link  = os.environ['WG_REMOTE_DATA_STORE']
-        record_links = [urllib.parse.urljoin (DS_link,record_filename) for record_filename in record_filenames ]
+        bucket_name  = os.environ['WG_S3BUCKET_NAME']
+        #record_links = [urllib.parse.urljoin (DS_link,record_filename) for record_filename in record_filenames ]
         record_timestamps = list(records_pd.index.values)
         record_dates = [dt.datetime.fromtimestamp(int(ts)) for ts in record_timestamps] # formated for display in the web pages
         # select apropriate timestamp to display:
@@ -76,8 +78,8 @@ def show_city():
             record_idx = -1
         else:
             record_idx = record_timestamps.index(timestamp)
-        record_link = record_links[record_idx]
-        record_dict = get_dict_from_data_http(record_link)[-1]
+        record_filename = record_filenames[record_idx]
+        record_dict = download_jsongz_data(s3engine, bucket_name, object_name=record_filename)
         info_date = dt.datetime.fromtimestamp(record_dict['current']['dt']).isoformat()
         weather_info_table = pd.json_normalize(record_dict['current']).loc[:,'sunrise':'wind_deg'].to_html(index=False)
         forecast_table = pd.json_normalize(record_dict['hourly']).loc[:,'dt':'wind_deg']
@@ -120,13 +122,13 @@ def plot_param(city,country,plot_parameter='main.temp'):
     return response
 
 if __name__ == '__main__':
-    config = load_appconfig(os.environ['WG_CONFIG_PATH'])
+    config = load_appconfig(s3engine,os.environ['WG_CONFIG_PATH'])
     if config == None:
-        # initialize the config file if none is found
+        # initialize the config file
         local_data_folder=os.environ['WG_LOCAL_DATA_STORE']
         config_path=os.environ['WG_CONFIG_PATH']
-        init_config_file(local_data_folder, config_path, count_limit=int(os.environ['WG_CITY_COUNT_LIMIT']))
-        config = load_appconfig(os.environ['WG_CONFIG_PATH'])
+        init_config_file(s3engine,local_data_folder, config_path, count_limit=int(os.environ['WG_CITY_COUNT_LIMIT']))
+        config = load_appconfig(s3engine,os.environ['WG_CONFIG_PATH'])
     app.run(debug=True, host='0.0.0.0')
     
     
